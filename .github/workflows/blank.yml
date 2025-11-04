@@ -20,16 +20,16 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install ParamSpider
+      - name: Install ParamSpider and dependencies
         run: |
-          git clone https://github.com/devanshbatham/paramspider.git
-          cd paramspider
-          pip install -r requirements.txt
+          git clone https://github.com/devanshbatham/ParamSpider.git
+          cd ParamSpider
+          pip install requests urllib3
 
       - name: Run ParamSpider
         run: |
-          cd paramspider
-          python3 paramspider.py -d ${{ github.event.inputs.domain}} -o output.txt
+          cd ParamSpider
+          python3 paramspider.py -d "${{ github.event.inputs.domain}}" -o output.txt
 
       - name: Send output to Telegram
         env:
@@ -38,4 +38,4 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
             -F chat_id=${CHAT_ID} \
-            -F document=@"paramspider/output.txt"
+            -F document=@"ParamSpider/output.txt"
