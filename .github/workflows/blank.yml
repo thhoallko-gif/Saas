@@ -1,0 +1,42 @@
+name: ParamSpider Telegram Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Target domain (e.g. example.com)"
+        required: true
+
+jobs:
+  run-paramspider:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install ParamSpider
+        run: |
+          git clone https://github.com/devanshbatham/paramspider.git
+          cd paramspider
+          pip install -r requirements.txt
+
+      - name: Run ParamSpider
+        run: |
+          cd paramspider
+          python3 paramspider.py -d github.event.inputs.domain  -o output.txt
+
+      - name: Send to Telegram
+        env:
+          BOT_TOKEN:{{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: secrets.TELEGRAM_CHAT_ID 
+        run: |
+          cd paramspider
+          curl -s -X POST "https://api.telegram.org/bot{BOT_TOKEN}/sendDocument" \
+            -F chat_id="${CHAT_ID}" \
+            -F document=@"output.txt" 
