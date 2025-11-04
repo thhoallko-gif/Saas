@@ -23,7 +23,6 @@ jobs:
       - name: Install ParamSpider and dependencies
         run: |
           git clone https://github.com/devanshbatham/ParamSpider.git
-          cd ParamSpider
           pip install requests urllib3
 
       - name: Run ParamSpider
@@ -35,6 +34,10 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN}}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID}}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
+            -F chat_id=${CHAT_ID} \
+            -F document=@"ParamSpider/output.txt"          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID}}
         run: |
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
             -F chat_id=${CHAT_ID} \
