@@ -29,14 +29,13 @@ jobs:
       - name: Run ParamSpider
         run: |
           cd paramspider
-          python3 paramspider.py -d github.event.inputs.domain  -o output.txt
+          python3 paramspider.py -d ${{ github.event.inputs.domain}} -o output.txt
 
-      - name: Send to Telegram
+      - name: Send output to Telegram
         env:
-          BOT_TOKEN:{{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: secrets.TELEGRAM_CHAT_ID 
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN}}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID}}
         run: |
-          cd paramspider
-          curl -s -X POST "https://api.telegram.org/bot{BOT_TOKEN}/sendDocument" \
-            -F chat_id="${CHAT_ID}" \
-            -F document=@"output.txt" 
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
+            -F chat_id=${CHAT_ID} \
+            -F document=@"paramspider/output.txt"
